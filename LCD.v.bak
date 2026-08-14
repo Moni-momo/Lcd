@@ -1,0 +1,46 @@
+module LCD(
+    input rst,
+    output rs,
+    output rw,
+    output e,
+    output [7:0] data,
+    output blon
+);
+assign blon = 1'b1;
+reg [31:0] counter =0;
+reg done;
+always@(posedge clk or negedge rst) begin
+    if(!rst) 
+        counter <= 0;
+    else if(counter == 32'd7500000)  begin
+             counter <= 0;
+              done <= 1;
+    end
+    else begin
+        done <=0;
+        counter <= counter + 1;
+    end
+end
+reg [3:0] state =0;
+always@(posedge clk or negedge rst) begin
+    if(!rst) begin
+          
+    end
+    else if(done) begin
+            case(state)
+                0: begin
+                    rs <= 0;
+                    rw <= 0;
+                    e <= 1;
+                    data <= 8'h38;
+                   
+                    state <= 1;
+                end
+                1: begin
+                    e<= 0;
+                    
+                    state <= 2;
+                end
+    end
+end
+endmodule
